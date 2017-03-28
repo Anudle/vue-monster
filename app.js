@@ -14,43 +14,54 @@ new Vue({
             this.monsterHealth = 100;
         },
         attack: function() {
-            var max = 10;
-            var min = 3;
-            var damage = Math.max(Math.floor(Math.random() * 10) + 1, min)
-            this.monsterHealth -= damage;
-
-            if(this.monsterHealth <= 0){
-              alert('You won!');
-              this.gameisRunning = false;
+            this.monsterHealth -= this.calculateDamage(3, 10);
+            if (this.checkWin()) {
+                return
             }
-            max = 11
-            min = 4
-            var damage = Math.max(Math.floor(Math.random() * 10) + 1, min)
-            this.humanHealth -= damage
-            if(this.humanHealth <= 0){
-              alert('You lost!');
-              this.gameisRunning = false;
-            }
+            this.monsterAttack()
         },
         specialAttack: function() {
-            var vm = this;
-            var humanSpecialAttack = Math.floor(Math.random() * 20) + 1;
-            var monsterSpecialAttack = Math.floor(Math.random() * 20) + 1
-            console.log('humman specialAttack ' + humanSpecialAttack);
-            console.log('monster specialAttack ' + monsterSpecialAttack);
-            vm.humanHealth = vm.humanHealth - humanSpecialAttack;
-            vm.monsterHealth = vm.monsterHealth - monsterSpecialAttack
+            this.monsterHealth -= this.calculateDamage(10, 20);
+            if (this.checkWin()) {
+                return
+            }
+            this.monsterAttack()
         },
-        heal: function(){
-
+        monsterAttack: function() {
+            this.humanHealth -= this.calculateDamage(5, 11)
+            this.checkWin()
         },
-        giveUp: function(){
-
+        heal: function() {
+            if (this.humanHealth <= 90) {
+                this.humanHealth += 10;
+            } else {
+                this.humanHealth = 100;
+            }
+            this.monsterAttack()
+        },
+        giveUp: function() {
+          this.gameisRunning = false;
+        },
+        calculateDamage: function(min, max) {
+            return Math.max(Math.floor(Math.random() * 10) + 1, min)
+        },
+        checkWin: function() {
+            if (this.monsterHealth <= 0) {
+                if (confirm('You won! New game?')) {
+                    this.startGame();
+                } else {
+                    this.gameisRunning = false;
+                }
+                return true;
+            } else if (this.humanHealth < 0) {
+                if (confirm('You lost! New Game')) {
+                    this.startGame();
+                } else {
+                    this.gameisRunning = false;
+                }
+                return true
+            }
+            return false
         }
     },
-    computed: {
-
-    }
-
-
 })
